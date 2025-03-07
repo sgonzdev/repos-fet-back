@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\programs\ProgramController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,8 +29,11 @@ Route::group(['middleware' => ['auth:api', 'throttle:60,1']], function () {
         Route::post('refresh', [AuthController::class, 'refresh']);
         Route::get('me', [AuthController::class, 'me']);
     });
+    Route::group(['prefix' => 'programs'], function () {
+        Route::get('mount', [ProgramController::class, 'mount']);
+        Route::get('get', [ProgramController::class, 'get']);
+    });
 
-    // Rutas para administradores
     Route::group(['middleware' => 'role:admin', 'prefix' => 'admin'], function () {
         // Aquí añadirías rutas accesibles solo para administradores
         Route::get('dashboard', function () {
@@ -40,7 +44,6 @@ Route::group(['middleware' => ['auth:api', 'throttle:60,1']], function () {
         });
     });
 
-    // Ejemplo de ruta que requiere permisos específicos
     Route::group(['middleware' => 'permission:user_create', 'prefix' => 'users'], function () {
         Route::post('/', function () {
             return response()->json([
