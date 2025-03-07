@@ -36,14 +36,12 @@ class RolePermissionSeeder extends Seeder
             Permission::create(['name' => $permission]);
         }
 
-        // Crear roles con permisos asignados
         $adminRole = Role::create(['name' => 'admin']);
         $adminRole->givePermissionTo(Permission::all());
 
         $userRole = Role::create(['name' => 'user']);
         $userRole->givePermissionTo(['user_read']);
 
-        // Crear usuario admin de ejemplo
         $admin = User::create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',
@@ -51,7 +49,6 @@ class RolePermissionSeeder extends Seeder
         ]);
         $admin->assignRole('admin');
 
-        // Crear usuario regular de ejemplo
         $user = User::create([
             'name' => 'Regular User',
             'email' => 'user@example.com',
