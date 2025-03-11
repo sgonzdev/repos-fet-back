@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\Projects\ProjectService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Models\Projects\Project;
 
 class ProjectController extends Controller
 {
@@ -72,7 +73,22 @@ class ProjectController extends Controller
 
     public function destroy($id)
     {
+        $project = $this->projectService->getProjectById($id);
+        if (!$project) {
+            return response()->json(['message' => 'Proyecto no encontrado'], Response::HTTP_NOT_FOUND);
+        }
+        
         $this->projectService->deleteProject($id);
         return response()->json(['message' => 'Proyecto eliminado correctamente'], Response::HTTP_OK);
+    }
+    
+
+    public function count()
+    {
+        $count = $this->projectService->countProjects();
+        return response()->json([
+            'message' => 'Total de proyectos registrados',
+            'count' => $count
+        ], Response::HTTP_OK);
     }
 }

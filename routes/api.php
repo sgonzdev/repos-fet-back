@@ -25,6 +25,7 @@ Route::group(['prefix' => 'auth', 'middleware' => ['throttle:60,1']], function (
 // Rutas para Projects
 Route::group(['prefix' => 'projects'], function () {
     Route::get('/', [ProjectController::class, 'index']);       // Listar todos los proyectos
+    Route::get('count', [ProjectController::class, 'count']);   // Obtener la cantidad de proyectos
     Route::get('{id}', [ProjectController::class, 'show']);     // Obtener un proyecto por ID
     Route::post('/', [ProjectController::class, 'store']);      // Crear un nuevo proyecto
     Route::put('{project}', [ProjectController::class, 'update']);  // Actualizar un proyecto

@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 
 class ProjectService
 {
-
     public function updateProject($id, array $data)
     {
         $project = Project::findOrFail($id);
@@ -21,6 +20,7 @@ class ProjectService
         $project = Project::findOrFail($id);
         $project->delete();
     }
+
     public function getAllProjects()
     {
         return Project::with('researchers')->get()->map(function ($project) {
@@ -42,19 +42,19 @@ class ProjectService
                 $data['researcher_two'] ?? null,
                 $data['researcher_three'] ?? null,
             ]);
-    
+
             $project = Project::create($data);
-    
+
             $researchers = collect($researcherNames)->map(function ($name) {
                 return Researcher::firstOrCreate(['name' => ucfirst(strtolower(trim($name)))]);
             });
-    
+
             $project->researchers()->sync($researchers->pluck('id'));
-    
+
             return $this->formatProject($project->loadMissing('researchers'));
         });
     }
-    
+
     private function formatProject(Project $project)
     {
         return [
@@ -89,5 +89,10 @@ class ProjectService
             if ($ahora >= strtotime("-10 days", $fechaFin) && $ahora < $fechaFin) return "bg-warning";
         }
         return "bg-success";
+    }
+
+    public function countProjects()
+    {
+        return Project::count();
     }
 }
