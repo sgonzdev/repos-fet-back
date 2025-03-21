@@ -22,15 +22,7 @@ Route::group(['prefix' => 'auth', 'middleware' => ['throttle:60,1']], function (
     Route::post('login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 });
 
-// Rutas para Projects
-Route::group(['prefix' => 'projects'], function () {
-    Route::get('/', [ProjectController::class, 'index']);       // Listar todos los proyectos
-    Route::get('count', [ProjectController::class, 'count']);   // Obtener la cantidad de proyectos
-    Route::get('{id}', [ProjectController::class, 'show']);     // Obtener un proyecto por ID
-    Route::post('/', [ProjectController::class, 'store']);      // Crear un nuevo proyecto
-    Route::put('{project}', [ProjectController::class, 'update']);  // Actualizar un proyecto
-    Route::delete('{project}', [ProjectController::class, 'destroy']); // Eliminar un proyecto
-});
+
 
 // Rutas protegidas
 Route::group(['middleware' => ['auth:api', 'throttle:60,1']], function () {
@@ -43,6 +35,17 @@ Route::group(['middleware' => ['auth:api', 'throttle:60,1']], function () {
     Route::group(['prefix' => 'programs'], function () {
         Route::get('mount', [ProgramController::class, 'mount']);
         Route::get('get', [ProgramController::class, 'get']);
+    });
+    // Rutas para Projects
+    Route::group(['prefix' => 'projects'], function () {
+        Route::get('/', [ProjectController::class, 'index']);
+        Route::get('count', [ProjectController::class, 'count']);
+        Route::get('count/{pronoun}', [ProjectController::class, 'countProjectsByPronoun']);
+        Route::get('{id}', [ProjectController::class, 'show']);
+        Route::post('/', [ProjectController::class, 'store']);
+        Route::put('{project}', [ProjectController::class, 'update']);
+        Route::delete('{project}', [ProjectController::class, 'destroy']);
+        Route::get('complementarid/{program}', [ProjectController::class, 'complementarId']);
     });
 
     Route::group(['middleware' => 'role:admin', 'prefix' => 'admin'], function () {
@@ -64,4 +67,3 @@ Route::group(['middleware' => ['auth:api', 'throttle:60,1']], function () {
         });
     });
 });
-    

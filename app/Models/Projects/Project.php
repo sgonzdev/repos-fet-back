@@ -20,7 +20,7 @@ class Project extends Model
         'objective',
         'source',
         'program_id',
-        'value'
+        'value',
     ];
 
     public function program()

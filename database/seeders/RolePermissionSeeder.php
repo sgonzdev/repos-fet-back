@@ -13,10 +13,8 @@ class RolePermissionSeeder extends Seeder
 {
     public function run()
     {
-        // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Crear permisos
         $permissions = [
             'user_create',
             'user_read',

@@ -17,7 +17,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RolePermissionSeeder::class,
             ProgramsTableSeeder::class,
-            ProjectSeeder::class, // Agregamos el nuevo seeder
         ]);
 
 

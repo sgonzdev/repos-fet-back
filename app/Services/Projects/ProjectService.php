@@ -3,6 +3,7 @@
 namespace App\Services\Projects;
 
 use App\Models\Projects\Project;
+use App\Models\Program;
 use App\Models\Projects\Researcher;
 use Illuminate\Support\Facades\DB;
 
@@ -10,9 +11,24 @@ class ProjectService
 {
     public function updateProject($id, array $data)
     {
-        $project = Project::findOrFail($id);
-        $project->update($data);
-        return $project;
+        return DB::transaction(function () use ($id, $data) {
+            $project = Project::findOrFail($id);
+
+            $researcherNames = array_filter([
+                $data['researcher_one'] ?? null,
+                $data['researcher_two'] ?? null,
+                $data['researcher_three'] ?? null,
+            ]);
+
+            $project->update($data);
+            $researchers = collect($researcherNames)->map(function ($name) {
+                return Researcher::firstOrCreate(['name' => ucfirst(strtolower(trim($name)))]);
+            });
+
+            $project->researchers()->sync($researchers->pluck('id'));
+
+            return $this->formatProject($project->loadMissing('researchers'));
+        });
     }
 
     public function deleteProject($id)
@@ -44,9 +60,10 @@ class ProjectService
             ]);
 
             $project = Project::create($data);
-
             $researchers = collect($researcherNames)->map(function ($name) {
-                return Researcher::firstOrCreate(['name' => ucfirst(strtolower(trim($name)))]);
+                return Researcher::firstOrCreate([
+                    'name' => ucfirst(strtolower(trim($name)))
+                ]);
             });
 
             $project->researchers()->sync($researchers->pluck('id'));
@@ -62,7 +79,7 @@ class ProjectService
             'codigo' => $project->code,
             'nombreProyecto' => $project->name,
             'objetivoGeneral' => $project->objective,
-            'programa' => $project->source,
+            'programa' => $project->program->name ?? null,
             'anio' => $project->start_date ? date('Y', strtotime($project->start_date)) : null,
             'procedencia' => $project->source,
             'investigadorUno' => $project->researchers[0]->name ?? null,
@@ -72,7 +89,6 @@ class ProjectService
             'fechaFin' => $project->end_date,
             'estado' => $project->status,
             'valorProyecto' => $project->value,
-            'cantidadProyectos' => $project->researchers->count(),
             'alerta' => $this->generateAlert($project),
         ];
     }
@@ -94,5 +110,14 @@ class ProjectService
     public function countProjects()
     {
         return Project::count();
+    }
+
+    public function countProjectsByPronoun(string $pronoun): int
+    {
+        $programId = Program::where('career', $pronoun)->value('id');
+        if (!$programId) {
+            return 0;
+        }
+        return Project::where('program_id', $programId)->count();
     }
 }

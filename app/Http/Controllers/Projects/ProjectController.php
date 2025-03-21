@@ -56,15 +56,15 @@ class ProjectController extends Controller
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
-            'code' => 'string|unique:projects,code,' . $id,
             'name' => 'string',
             'status' => 'string',
-            'start_date' => 'date',
             'end_date' => 'nullable|date',
             'objective' => 'string',
             'source' => 'string',
-            'program_id' => 'nullable|exists:programs,id',
-            'value' => 'numeric|min:0'
+            'value' => 'numeric|min:0',
+            'researcher_one' => 'nullable|string',
+            'researcher_two' => 'nullable|string',
+            'researcher_three' => 'nullable|string',
         ]);
 
         $project = $this->projectService->updateProject($id, $validatedData);
@@ -77,18 +77,20 @@ class ProjectController extends Controller
         if (!$project) {
             return response()->json(['message' => 'Proyecto no encontrado'], Response::HTTP_NOT_FOUND);
         }
-        
+
         $this->projectService->deleteProject($id);
         return response()->json(['message' => 'Proyecto eliminado correctamente'], Response::HTTP_OK);
     }
-    
+
 
     public function count()
     {
-        $count = $this->projectService->countProjects();
-        return response()->json([
-            'message' => 'Total de proyectos registrados',
-            'count' => $count
-        ], Response::HTTP_OK);
+        return (string) $this->projectService->countProjects();
     }
+
+    public function countProjectsByPronoun($pronoun)
+    {
+        return (string) $this->projectService->countProjectsByPronoun($pronoun);
+    }
+
 }
