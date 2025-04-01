@@ -120,4 +120,68 @@ class ProjectService
         }
         return Project::where('program_id', $programId)->count();
     }
+
+    public function filterProjects(array $filters)
+    {
+        $query = Project::with(['program', 'researchers'])
+            ->when(isset($filters['id']), function ($q) use ($filters) {
+                $q->where('id', $filters['id']);
+            })
+            ->when(isset($filters['code']), function ($q) use ($filters) {
+                $q->where('code', 'LIKE', '%'.$filters['code'].'%');
+            })
+            ->when(isset($filters['name']), function ($q) use ($filters) {
+                $q->where('name', 'LIKE', '%'.$filters['name'].'%');
+            })
+            ->when(isset($filters['status']), function ($q) use ($filters) {
+                $q->where('status', $filters['status']);
+            })
+            ->when(isset($filters['start_date']), function ($q) use ($filters) {
+                $q->whereDate('start_date', $filters['start_date']);
+            })
+            ->when(isset($filters['end_date']), function ($q) use ($filters) {
+                $q->whereDate('end_date', $filters['end_date']);
+            })
+            ->when(isset($filters['program_id']), function ($q) use ($filters) {
+                $q->where('program_id', $filters['program_id']);
+            });
+    
+        return $query->get()->map(function ($project) {
+            return $this->formatProjectForAngular($project);
+        });
+    }
+
+    private function formatProjectForAngular(Project $project)
+    {
+        return [
+            'id' => $project->id,
+            'codigo' => $project->code,
+            'nombreProyecto' => $project->name,
+            'objetivoGeneral' => $project->objective,
+            'programa' => $project->program->name ?? 'Sin programa',
+            'anio' => $project->start_date ? date('Y', strtotime($project->start_date)) : 'Sin fecha',
+            'procedencia' => $project->source,
+            'investigadorUno' => $project->researchers[0]->name ?? 'Sin investigador',
+            'investigadorDos' => $project->researchers[1]->name ?? 'Sin investigador',
+            'investigadorTres' => $project->researchers[2]->name ?? 'Sin investigador',
+            'fechaInicio' => $project->start_date,
+            'fechaFin' => $project->end_date,
+            'estado' => $project->status,
+            'valorProyecto' => number_format($project->value, 2, '.', ','), 
+            'cantidadProyectos' => $project->researchers->count(),
+            'alerta' => $this->generateAlert($project)
+        ];
+    }
+    
+    public function getProjectsByProgramName($programName)
+    {
+        return Project::with('researchers')
+            ->whereHas('program', function($query) use ($programName) {
+                $query->where('name', 'LIKE', '%' . $programName . '%');
+            })
+            ->get()
+            ->map(function ($project) {
+                return $this->formatProjectForAngular($project);
+            });
+    }
 }

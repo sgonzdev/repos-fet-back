@@ -92,5 +92,54 @@ class ProjectController extends Controller
     {
         return (string) $this->projectService->countProjectsByPronoun($pronoun);
     }
+    
+    public function filterByParameter($parameter)
+    {
+        $filters = [];
+        
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $parameter)) {
+            $filters['start_date'] = $parameter;
+        } 
+        elseif (preg_match('/^[A-Z0-9-]+$/i', $parameter)) {
+            $filters['code'] = $parameter;
+        } 
+        elseif (in_array(strtoupper($parameter), ['ACTIVO', 'EN_PROGRESO', 'TERMINADO', 'DETENIDO'])) {
+            $filters['status'] = strtoupper($parameter);
+        } 
+        elseif (is_numeric($parameter)) {
+            $filters['id'] = (int)$parameter;
+        } 
+        else {
+            $filters['name'] = $parameter;
+        }
+        
+        $projects = $this->projectService->filterProjects($filters);
+        return response()->json($projects);
+    }
 
+    public function filterByMultipleParameters($param1, $param2)
+    {
+    $filters = [];
+    
+    if (is_numeric($param1)) {
+        $filters['id'] = (int)$param1;
+    } elseif (preg_match('/^[A-Z0-9-]+$/i', $param1)) {
+        $filters['code'] = $param1;
+    } else {
+        $filters['name'] = $param1;
+    }
+    
+    if (is_numeric($param2)) {
+        $filters['program_id'] = (int)$param2;
+    } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $param2)) {
+        $filters['end_date'] = $param2;
+    } elseif (in_array(strtoupper($param2), ['ACTIVO', 'EN_PROGRESO', 'TERMINADO', 'DETENIDO'])) {
+        $filters['status'] = strtoupper($param2);
+    } else {
+        $filters['source'] = $param2;
+    }
+    
+    $projects = $this->projectService->filterProjects($filters);
+    return response()->json($projects);
+    }
 }

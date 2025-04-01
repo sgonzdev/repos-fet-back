@@ -22,8 +22,6 @@ Route::group(['prefix' => 'auth', 'middleware' => ['throttle:60,1']], function (
     Route::post('login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 });
 
-
-
 // Rutas protegidas
 Route::group(['middleware' => ['auth:api', 'throttle:60,1']], function () {
     // Autenticación
@@ -40,6 +38,8 @@ Route::group(['middleware' => ['auth:api', 'throttle:60,1']], function () {
     Route::group(['prefix' => 'projects'], function () {
         Route::get('/', [ProjectController::class, 'index']);
         Route::get('count', [ProjectController::class, 'count']);
+        Route::get('filter/{parameter}', [ProjectController::class, 'filterByParameter']);
+        Route::get('filter/{param1}/{param2}', [ProjectController::class, 'filterByMultipleParameters']);      
         Route::get('count/{pronoun}', [ProjectController::class, 'countProjectsByPronoun']);
         Route::get('{id}', [ProjectController::class, 'show']);
         Route::post('/', [ProjectController::class, 'store']);
