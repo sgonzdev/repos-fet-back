@@ -27,7 +27,6 @@ class SessionTimeoutServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Verificar tiempo de sesión en cada solicitud autenticada
         $this->app['router']->matched(function (\Illuminate\Routing\Events\RouteMatched $event) {
             if (Auth::check()) {
                 try {
@@ -35,7 +34,7 @@ class SessionTimeoutServiceProvider extends ServiceProvider
                         $payload = JWTAuth::parseToken()->getPayload();
                         $tokenCreatedAt = $payload->get('iat');
 
-                        if (time() - $tokenCreatedAt > 1800) { // 30 minutos
+                        if (time() - $tokenCreatedAt > 1800) {
                             Auth::logout();
                             abort(401, 'Session has expired due to inactivity');
                         }
@@ -45,7 +44,6 @@ class SessionTimeoutServiceProvider extends ServiceProvider
                     }
 
                 } catch (JWTException $e) {
-                    // Si hay algún problema con el token, forzar logout
                     Auth::logout();
                     abort(401, 'Invalid or expired token');
                 }

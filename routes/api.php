@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\programs\ProgramController;
+use App\Http\Controllers\Projects\ProjectController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -15,9 +17,8 @@ use App\Http\Controllers\programs\ProgramController;
 |
 */
 
-
 // Rutas públicas
-Route::group(['prefix' => 'auth' , 'middleware' => ['throttle:60,1']], function () {
+Route::group(['prefix' => 'auth', 'middleware' => ['throttle:60,1']], function () {
     Route::post('login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 });
 
@@ -32,6 +33,19 @@ Route::group(['middleware' => ['auth:api', 'throttle:60,1']], function () {
     Route::group(['prefix' => 'programs'], function () {
         Route::get('mount', [ProgramController::class, 'mount']);
         Route::get('get', [ProgramController::class, 'get']);
+    });
+    // Rutas para Projects
+    Route::group(['prefix' => 'projects'], function () {
+        Route::get('/', [ProjectController::class, 'index']);
+        Route::get('count', [ProjectController::class, 'count']);
+        Route::get('filter/{parameter}', [ProjectController::class, 'filterByParameter']);
+        Route::get('filter/{param1}/{param2}', [ProjectController::class, 'filterByMultipleParameters']);      
+        Route::get('count/{pronoun}', [ProjectController::class, 'countProjectsByPronoun']);
+        Route::get('{id}', [ProjectController::class, 'show']);
+        Route::post('/', [ProjectController::class, 'store']);
+        Route::put('{project}', [ProjectController::class, 'update']);
+        Route::delete('{project}', [ProjectController::class, 'destroy']);
+        Route::get('complementarid/{program}', [ProjectController::class, 'complementarId']);
     });
 
     Route::group(['middleware' => 'role:admin', 'prefix' => 'admin'], function () {

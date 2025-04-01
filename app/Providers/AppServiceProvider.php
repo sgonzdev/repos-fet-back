@@ -25,11 +25,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Forzar HTTPS en producción
         if(config('app.env') === 'production') {
             URL::forceScheme('https');
         }
-
-        // Configuración de longitud de cadena por defecto para evitar problemas con MySQL
     }
 }

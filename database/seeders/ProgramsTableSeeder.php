@@ -10,12 +10,30 @@ class ProgramsTableSeeder extends Seeder
 {
     public function run()
     {
-        Program::insert([
-            ['name' => 'Ingenieria de Software', 'career' => 'SOF'],
-            ['name' => 'Ingenieria Ambiental', 'career' => 'AMB'],
-            ['name' => 'Ingenieria Electrica', 'career' => 'ELE'],
-            ['name' => 'Salud y Seguridad en el Trabajo', 'career' => 'SST'],
-            ['name' => 'Ingenieria de Alimentos', 'career' => 'ALI'],
-        ]);
+        $names = [
+            'Ingenieria de Software',
+            'Ingenieria Ambiental',
+            'Ingenieria Electrica',
+            'Salud y Seguridad en el Trabajo',
+            'Ingenieria de Alimentos',
+        ];
+        $careers = [
+            'SOF',
+            'AMB',
+            'ELE',
+            'SST',
+            'ALI',
+        ];
+        $programs = [];
+        foreach ($names as $index => $name) {
+            $programs[] = [
+                'name' => $name,
+                'career' => $careers[$index],
+            ];
+        }
+
+        foreach ($programs as $program) {
+            Program::create($program);
+        }
     }
 }

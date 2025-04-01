@@ -20,6 +20,22 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
         });
+
+
+        Schema::create('user_activity_logs', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->string('action');
+            $table->string('entity_type', 100);
+            $table->unsignedBigInteger('entity_id');
+            $table->text('details')->nullable();
+            $table->string('ip_address', 45)->nullable();
+            $table->string('user_agent')->nullable();
+            $table->timestamps();
+
+            $table->index(['entity_type', 'entity_id']);
+            $table->index('action');
+        });
     }
 
     /**
@@ -27,6 +43,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('user_activity_logs');
         Schema::dropIfExists('users');
     }
 };
