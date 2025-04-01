@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Program;
 use App\Models\Projects\Researcher;
+use App\Models\Projects\Source;
+use App\Models\Projects\Typology;
 
 class Project extends Model
 {
@@ -14,13 +16,14 @@ class Project extends Model
     protected $fillable = [
         'code',
         'name',
-        'status',
         'start_date',
         'end_date',
         'objective',
-        'source',
-        'program_id',
+        'status',
         'value',
+        'source_id',
+        'typology_id',
+        'program_id',
     ];
 
     public function program()
@@ -28,6 +31,14 @@ class Project extends Model
         return $this->belongsTo(Program::class, 'program_id');
     }
 
+    public function source()
+    {
+        return $this->belongsTo(Source::class, 'source_id');
+    }
+    public function typology()
+    {
+        return $this->belongsTo(Typology::class, 'typology_id');
+    }
     public function researchers()
     {
         return $this->belongsToMany(Researcher::class, 'project_researcher');

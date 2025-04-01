@@ -120,4 +120,8 @@ class ProjectService
         }
         return Project::where('program_id', $programId)->count();
     }
+
+    public function filterproject($filtro){
+        return Project::where('name', 'like', '%' . $filtro . '%')->get();
+    }
 }
