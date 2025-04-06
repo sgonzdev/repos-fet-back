@@ -10,7 +10,12 @@ class Source extends Model
     use HasFactory;
     protected $table = 'source';
     protected $fillable = [
-        'source',
+        'source', 'typology_id',
     ];
+
+    public function typology()
+    {
+        return $this->belongsTo(Typology::class, 'typology_id');
+    }
 
 }

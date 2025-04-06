@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('project_id')->constrained('projects')->cascadeOnDelete();
             $table->foreignId('researcher_id')->constrained('researchers')->cascadeOnDelete();
+            $table->timestamps();
         });
     }
 

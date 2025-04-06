@@ -22,7 +22,6 @@ class Project extends Model
         'status',
         'value',
         'source_id',
-        'typology_id',
         'program_id',
     ];
 
@@ -35,10 +34,7 @@ class Project extends Model
     {
         return $this->belongsTo(Source::class, 'source_id');
     }
-    public function typology()
-    {
-        return $this->belongsTo(Typology::class, 'typology_id');
-    }
+
     public function researchers()
     {
         return $this->belongsToMany(Researcher::class, 'project_researcher');
